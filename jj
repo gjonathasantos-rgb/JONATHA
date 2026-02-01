@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JONATHA | Gestão Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-light: #ffedd5;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-sec: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* HEADER */
+        header { 
+            background: white; padding: 15px 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #e2e8f0; z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); letter-spacing: -1px; }
+
+        /* CONTEÚDO */
+        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+
+        /* CARDS */
+        .card { 
+            background: var(--card); border-radius: 16px; padding: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px; border: 1px solid #f1f5f9;
+        }
+        h3 { font-size: 1rem; font-weight: 600; margin-bottom: 15px; color: var(--dark); }
+
+        /* FORMULÁRIO */
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-sec); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { 
+            width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 10px; 
+            font-size: 1rem; transition: 0.2s; background: #fdfdfd; outline: none;
+        }
+        input:focus { border-color: var(--primary); background: white; }
+
+        .btn-primary { 
+            width: 100%; padding: 14px; background: var(--primary); color: white; 
+            border: none; border-radius: 10px; font-weight: 600; font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); cursor: pointer;
+        }
+
+        /* GRÁFICOS */
+        .chart-container { height: 260px; width: 100%; position: relative; }
+
+        /* TABELA */
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        th { text-align: left; font-size: 0.7rem; color: var(--text-sec); padding: 12px; border-bottom: 1px solid #edf2f7; }
+        td { padding: 14px 12px; font-size: 0.85rem; border-bottom: 1px solid #f8fafc; }
+        .tag { background: var(--primary-light); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+
+        /* MENU INFERIOR */
+        nav.bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+            background: white; border-top: 1px solid #e2e8f0;
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .nav-link { 
+            display: flex; flex-direction: column; align-items: center; 
+            color: var(--text-sec); text-decoration: none; font-size: 0.7rem; font-weight: 500;
+        }
+        .nav-link.active { color: var(--primary); }
+
+        /* FILTROS CAPSULA */
+        .capsule-group { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .capsule { 
+            padding: 8px 18px; border-radius: 20px; background: #e2e8f0; 
+            color: var(--text-sec); font-size: 0.8rem; font-weight: 600; white-space: nowrap; cursor: pointer;
+        }
+        .capsule.active { background: var(--primary); color: white; }
+
+        /* LOGIN */
+        #login-screen {
+            position: fixed; inset: 0; background: var(--dark); 
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-card { width: 85%; max-width: 360px; background: white; padding: 40px 30px; border-radius: 24px; text-align: center; }
+
+        @media print {
+            .bottom-nav, .card-form, .capsule-group, header { display: none !important; }
+            main { overflow: visible; padding: 0; }
+            #sec-rep { display: block !important; }
+            .card { border: 1px solid #eee; break-inside: avoid; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="logo" style="font-size: 2.2rem; margin-bottom: 10px;">JONATHA</div>
+            <p style="color: var(--text-sec); margin-bottom: 25px;">Sistema de Gestão Técnica</p>
+            <input type="password" id="pass" placeholder="Senha" style="margin-bottom: 20px; text-align: center;">
+            <button class="btn-primary" onclick="entrar()">ACESSAR PAINEL</button>
+        </div>
+    </div>
+
+    <header id="app-header" style="display: none;">
+        <div class="logo">JONATHA</div>
+        <div style="font-size: 0.7rem; font-weight: 700; color: #10b981;">● ONLINE</div>
+    </header>
+
+    <main id="app-content" style="display: none;">
+        <section id="sec-os" class="view-section">
+            <div class="card card-form">
+                <h3>Registrar Manutenção</h3>
+                <div class="input-group"><label>Equipamento</label><input type="text" id="eq-name" placeholder="Ex: Câmera Portão"></div>
+                <div class="input-group">
+                    <label>Plano</label>
+                    <select id="eq-service">
+                        <option>Troca de SD Card</option>
+                        <option>Formatar SD Card</option>
+                        <option>Verificar Antena</option>
+                        <option>Verificar DVR</option>
+                        <option>Verificar Câmera</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="addOS()">SALVAR ORDEM</button>
+            </div>
+            <div class="card">
+                <h3>Atividades</h3>
+                <div class="table-container"><table><thead><tr><th>Equip.</th><th>Serviço</th><th>Data</th></tr></thead><tbody id="table-body"></tbody></table></div>
+            </div>
+        </section>
+
+        <section id="sec-rep" class="view-section" style="display: none;">
+            <div class="capsule-group">
+                <div class="capsule active" onclick="updateReport('semana', this)">Semanal</div>
+                <div class="capsule" onclick="updateReport('mes', this)">Mensal</div>
+                <div class="capsule" onclick="updateReport('ano', this)">Anual</div>
+            </div>
+            <div class="card">
+                <h3 id="report-title">Volume Semanal</h3>
+                <div class="chart-container"><canvas id="mainChart"></canvas></div>
+            </div>
+            <div class="card">
+                <h3>Tipos de Atendimento</h3>
+                <div class="chart-container"><canvas id="pieChart"></canvas></div>
+            </div>
+            <button class="btn-primary" onclick="window.print()" style="background: #10b981;">GERAR RELATÓRIO PDF</button>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" id="app-nav" style="display: none;">
+        <a href="#" class="nav-link active" id="nav-os" onclick="changeTab('os')"><span>📝</span>Ordens</a>
+        <a href="#" class="nav-link" id="nav-rep" onclick="changeTab('rep')"><span>📊</span>Gráficos</a>
+    </nav>
+
+    <script>
+        let db = [{ e: 'Câmera 01', s: 'Troca SD', d: '01/02' }];
+        let cLine, cPie;
+
+        function entrar() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-header').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('app-nav').style.display = 'flex';
+            renderTable(); initCharts();
+        }
+
+        function changeTab(tab) {
+            document.querySelectorAll('.view-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('sec-' + tab).style.display = 'block';
+            document.getElementById('nav-' + tab).classList.add('active');
+        }
+
+        function addOS() {
+            const e = document.getElementById('eq-name').value;
+            const s = document.getElementById('eq-service').value;
+            if(!e) return;
+            db.unshift({ e, s, d: '01/02' });
+            renderTable();
+            document.getElementById('eq-name').value = '';
+        }
+
+        function renderTable() {
+            document.getElementById('table-body').innerHTML = db.map(o => `<tr><td><b>${o.e}</b></td><td><span class="tag">${o.s}</span></td><td style="color:#94a3b8">${o.d}</td></tr>`).join('');
+        }
+
+        function initCharts() {
+            cLine = new Chart(document.getElementById('mainChart'), {
+                type: 'line',
+                data: { labels: ['S','T','Q','Q','S'], datasets: [{ data:[5,9,4,8,6], borderColor:'#f97316', tension:0.4, fill:true, backgroundColor:'rgba(249,115,22,0.1)' }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            cPie = new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: { labels: ['SD Card', 'DVR', 'Câmera'], datasets: [{ data: [10, 5, 8], backgroundColor: ['#f97316', '#0f172a', '#e2e8f0'] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function updateReport(per, btn) {
+            document.querySelectorAll('.capsule').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const d = {semana: [5,9,4,8,6], mes: [25,40,35,50], ano: [120,160,140,190]};
+            const l = {semana: ['S','T','Q','Q','S'], mes: ['S1','S2','S3','S4'], ano: ['Jan','Fev','Mar','Abr']};
+            document.getElementById('report-title').innerText = 'Volume ' + btn.innerText;
+            cLine.data.labels = l[per];
+            cLine.data.datasets[0].data = d[per];
+            cLine.update();
+        }
+    </script>
+</body>
+</html>
